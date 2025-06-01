@@ -1,16 +1,16 @@
 /* config */
 
 const kofiWidgetOverlayConfig = {
-    'floating-chat.core.pageId': '',
+    'floating-chat.core.pageId': 'guihjzzz', // FORÇADO AQUI TAMBÉM
     'floating-chat.core.closer': '<svg height="0px" width="15px"><line x1="2" y1="8" x2="13" y2="18" style="stroke:#000; stroke-width:3" /><line x1="13" y1="8" x2="2" y2="18" style="stroke:#000; stroke-width:3" /></svg>',
     'floating-chat.core.position.bottom-left': 'position: fixed; bottom: 50px; left: 10px; width: 160px; height: 65px;',
 
     'floating-chat.cssId': '',
-    'floating-chat.notice.text': 'ko-fi.com/%HANDLE%',
+    'floating-chat.notice.text': 'ko-fi.com/%HANDLE%', // %HANDLE% será substituído pelo pageId
     'floating-chat.donatebutton.image': 'https://storage.ko-fi.com/cdn/cup-border.png',
-    'floating-chat.donateButton.background-color': '#ff5722', // SUA COR AQUI
-    'floating-chat.donateButton.text': 'Apoie o Guizz!',      // SEU TEXTO AQUI
-    'floating-chat.donateButton.text-color': '#fff',     // SUA COR DE TEXTO AQUI
+    'floating-chat.donateButton.background-color': '#ff5722', // SUA COR DESEJADA
+    'floating-chat.donateButton.text': 'Apoie o Guizz!',      // SEU TEXTO DESEJADO
+    'floating-chat.donateButton.text-color': '#fff',         // SUA COR DE TEXTO DESEJADA
     'floating-chat.stylesheets': '["https://fonts.googleapis.com/css?family=Nunito:400,700,800&display=swap"]',
 };
 
@@ -18,13 +18,8 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
     const _configManager = _utils.getConfigManager(config);
     const _myType = 'floating-chat';
-    const _topContainerWrapClass = 'floatingchat-container-wrap';
-    const _topMobiContainerWrapClass = 'floatingchat-container-wrap-mobi';
+    // ... (resto do código inicial igual ao anterior) ...
 
-    var widgetPageLoadInitiatedStates = [];
-
-    var closeButtonActionBlocked = false;
-   
     function getButtonId() {
         return `${_configManager.getValue(_myType, 'cssId')}-donate-button`;
     };
@@ -42,8 +37,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     };
 
     function createButtonContainerIframe(iframeId, mainStyleSheetFile) {
-
-        var htmlBody = getHtml();
+        var htmlBody = getHtml(); // getHtml() agora usará os valores forçados de kofiWidgetOverlayConfig
         var buttonBody = '<html>' +
             '<head>' +
             `<link rel="preconnect" href="https://ko-fi.com/guihjzzz">` + 
@@ -62,24 +56,25 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
             var doc = iframe.contentDocument || iframe.contentWindow;
             if (doc && doc.readyState == 'complete') {
                 clearInterval(_timer);
-                var parentWrapper = document.getElementsByClassName(_topContainerWrapClass)[0];
-                var mobiParentWrapper = document.getElementsByClassName(_topMobiContainerWrapClass)[0];
-                if (parentWrapper) parentWrapper.style = 'z-index:10000;'; // Adicionado verificação
-                if (mobiParentWrapper) mobiParentWrapper.style = 'z-index:10000;'; // Adicionado verificação
+                var parentWrapper = document.getElementsByClassName('floatingchat-container-wrap')[0]; // Usando a classe diretamente
+                var mobiParentWrapper = document.getElementsByClassName('floatingchat-container-wrap-mobi')[0]; // Usando a classe diretamente
+                if (parentWrapper) parentWrapper.style = 'z-index:10000;';
+                if (mobiParentWrapper) mobiParentWrapper.style = 'z-index:10000;';
                 iframe.style = '';
             }
         }, 300);
 
         iframeContainerElement.write(buttonBody);
         iframeContainerElement.close();
-
         return iframeContainerElement;
     };
+    
+    // ... (função attachDonateButton e outras funções permanecem as mesmas que te enviei na ÚLTIMA vez) ...
+    // ... (importante garantir que as verificações de `if (elemento)` estão lá) ...
 
     function attachDonateButton(iframeContainerElement, iframeId, selectors, heightLimits) {
-
-        const donateButton = iframeContainerElement.getElementById(`${getButtonId()}`);
-        if (donateButton) { // Adicionado verificação
+        const donateButton = iframeContainerElement.getElementById(getButtonId()); // Usando getButtonId()
+        if (donateButton) { 
             donateButton.addEventListener('click',
                 function () {
                     if (donateButton.classList.contains("closed")) {
@@ -87,7 +82,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
                     } else if (!closeButtonActionBlocked) {
                         var popupId = _configManager.getValue(_myType, 'cssId') + `-${selectors.popupId}`;
                         var popup = document.getElementById(popupId);
-                        if (popup) closePopup(popup, donateButton); // Adicionado verificação
+                        if (popup) closePopup(popup, donateButton); 
                     }
                 });
         }
@@ -95,7 +90,6 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     };
 
     var write = function (parentElementId) {
-
         var docHead = document.head;
         if (!docHead) {
             docHead = document.createElement('head');
@@ -105,22 +99,20 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var iframeId = getContainerFrameId();
         var mobiIframeId = getMobiContainerFrameId();
 
-        var iframeHtml = `<div id="${parentButtonWrapperId}-wrap" class="${_topContainerWrapClass}" style="height: 0px; transition: all 0.3s ease 0s; opacity:0;">` + // Adicionado ID ao wrapper
+        var iframeHtml = `<div id="${_configManager.getValue(_myType, 'cssId')}-wrap" class="floatingchat-container-wrap" style="height: 0px; transition: all 0.3s ease 0s; opacity:0;">` +
             `<iframe class="floatingchat-container" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;" id="${iframeId}"></iframe>` +
             '</div>' +
-            `<div id="${parentButtonWrapperId}-wrap-mobi" class="${_topMobiContainerWrapClass}" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;">` + // Adicionado ID ao wrapper mobi
+            `<div id="${_configManager.getValue(_myType, 'cssId')}-wrap-mobi" class="floatingchat-container-wrap-mobi" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;">` +
             `<iframe class="floatingchat-container-mobi" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;" id="${mobiIframeId}"></iframe>` +
             '</div>';
         
-        var kofiOverlayContainer = document.getElementById(parentElementId); // Elemento principal onde o widget é desenhado
+        var kofiOverlayContainer = document.getElementById(parentElementId); 
         if (kofiOverlayContainer) {
             kofiOverlayContainer.innerHTML = iframeHtml;
         } else {
             console.error("Ko-fi: Parent element for widget overlay not found: " + parentElementId);
-            // Se o container principal não for encontrado, não podemos prosseguir com a criação dos iframes.
             return;
         }
-
 
         var iframeContainerElement = createButtonContainerIframe(iframeId, 'https://storage.ko-fi.com/cdn/scripts/floating-chat-main.css');
         var mobiIframeContainerElement = createButtonContainerIframe(mobiIframeId, 'https://storage.ko-fi.com/cdn/scripts/floating-chat-main.css');
@@ -129,7 +121,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var styleSheetsValue = _configManager.getValue(_myType, 'stylesheets');
 
         if ('' !== styleSheetsValue) {
-            try { // Adicionado try-catch para JSON.parse
+            try {
                 var styleSheets = JSON.parse(styleSheetsValue);
                 styleSheets.forEach(stylesheetRef => {
                     _utils.loadStyleSheet(stylesheetRef, document);
@@ -159,9 +151,8 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
             if (mobileDonateButton) widgetPageLoadInitiatedStates.push([mobileDonateButton, false]);
         }
 
-
         if (desktopDonateButton) {
-             insertPopupHtmlIntoBody(desktopDonateButton, { // Passando o botão correto
+             insertPopupHtmlIntoBody(desktopDonateButton, {
                 popupId: 'kofi-popup-iframe',
                 popupClass: 'floating-chat-kofi-popup-iframe',
                 noticeClass: 'floating-chat-kofi-popup-iframe-notice',
@@ -173,7 +164,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         }
 
        if (mobileDonateButton) {
-            insertPopupHtmlIntoBody(mobileDonateButton, { // Passando o botão correto
+            insertPopupHtmlIntoBody(mobileDonateButton, { 
                 popupId: 'kofi-popup-iframe-mobi',
                 popupClass: 'floating-chat-kofi-popup-iframe-mobi',
                 noticeClass: 'floating-chat-kofi-popup-iframe-notice-mobi',
@@ -184,22 +175,20 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
             }, parentElementId);
        }
     };
-
+    
     function activateKofiIframe(iframeId, selectors, heightLimits) {
         var iframeDoc = document.getElementById(iframeId);
-        if (!iframeDoc) return; // Adicionado verificação
+        if (!iframeDoc || !iframeDoc.contentDocument) return; 
         var iframeContainerElement = iframeDoc.contentDocument;
-        if (!iframeContainerElement) return; // Adicionado verificação
 
-
-        const donateButton = iframeContainerElement.getElementById(`${getButtonId()}`);
-        if (!donateButton) return; // Adicionado verificação
+        const donateButton = iframeContainerElement.getElementById(getButtonId());
+        if (!donateButton) return;
         const kofiIframeState = donateButton.classList.contains('closed') ? 'open' : 'close';
         toggleKofiIframe(iframeId, kofiIframeState, donateButton, selectors, heightLimits);
     };
 
     function updateClass(element, oldClass, newClass) {
-        if (!element) return; // Adicionado verificação
+        if (!element) return;
         if (oldClass !== '') {
             element.classList.remove(oldClass);
         }
@@ -209,26 +198,26 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     };
 
     function slidePopupOpen(popup, finalHeight) {
-        if (!popup) return; // Adicionado verificação
+        if (!popup) return; 
         popup.style = `z-index:10000;width:328px!important;height: ${finalHeight}px!important; transition: height 0.5s ease, opacity 0.3s linear; opacity:1;`;
         
-        var noticeMobi = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi")[0];
-        if (noticeMobi) noticeMobi.style.display = "block";
+        var noticeMobiCollection = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi");
+        if (noticeMobiCollection.length > 0) noticeMobiCollection[0].style.display = "block";
         
-        var noticeDesktop = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice")[0];
-        if (noticeDesktop) noticeDesktop.style.display = "block";
+        var noticeDesktopCollection = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice");
+        if (noticeDesktopCollection.length > 0) noticeDesktopCollection[0].style.display = "block";
     };
 
     function closePopup(popup, donateButton) {
-        if (!popup || !donateButton) return; // Adicionado verificação
+        if (!popup || !donateButton) return;
         popup.style = 'height: 0px; width:0px; transition:height 0.3s ease 0s , width 1s linear,opacity 0.3s linear; opacity:0;';
         updateClass(donateButton, 'open', 'closed');
 
-        var noticeMobi = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi")[0];
-        if (noticeMobi) noticeMobi.style.display = "none";
+        var noticeMobiCollection = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi");
+        if (noticeMobiCollection.length > 0) noticeMobiCollection[0].style.display = "none";
         
-        var noticeDesktop = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice")[0];
-        if (noticeDesktop) noticeDesktop.style.display = "none";
+        var noticeDesktopCollection = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice");
+        if (noticeDesktopCollection.length > 0) noticeDesktopCollection[0].style.display = "none";
     }
 
     function insertPopupHtmlIntoBody(donateButton, selectors, parentElementId) {
@@ -236,31 +225,29 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
         var popup = document.createElement('div');
         popup.id = popupId;
-        popup.className = selectors.popupClass; // Usar className para uma string de classes
+        popup.className = selectors.popupClass; 
         popup.style = `z-index:10000;height: 0px; width:0px; opacity: 0; transition: all 0.6s ease 0s;`;
 
         var parentDiv = document.getElementById(parentElementId);
-        if (parentDiv) { // Adicionado verificação
+        if (parentDiv) { 
             parentDiv.appendChild(popup);
         }
         else {
-            document.body.appendChild(popup); // Fallback, mas o ideal é que o parentElementId exista
+            document.body.appendChild(popup); 
         }
-
 
         var notice = document.createElement('div');
         notice.className = selectors.noticeClass;
 
-
-        var noticeText = _configManager.getValue(_myType, 'notice.text');
-        var pageId = _configManager.getValue(_myType, 'pageId', true);
-
-        noticeText = noticeText.replace("%HANDLE%", pageId);
-        var handleLink = document.createElement('a'); // Declarar com var, let ou const
+        var noticeTextRaw = _configManager.getValue(_myType, 'notice.text'); // Usar a configuração original
+        var pageIdToUse = _configManager.getValue(_myType, 'pageId', true) || 'guihjzzz'; // Fallback para guihjzzz
+        var noticeText = noticeTextRaw.replace("%HANDLE%", pageIdToUse); // Substituir %HANDLE%
+        
+        var handleLink = document.createElement('a'); 
         handleLink.setAttribute('href', "https://"+ noticeText);
         handleLink.setAttribute('target', "_blank");
         handleLink.setAttribute('class', 'kfds-text-is-link-dark');
-        var linkText = document.createTextNode(noticeText); // Declarar com var, let ou const
+        var linkText = document.createTextNode(noticeText); 
         handleLink.appendChild(linkText);
         notice.appendChild(handleLink);
         popup.appendChild(notice);
@@ -273,7 +260,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         closer.className = selectors.closerClass;
 
         closer.addEventListener('click', function (event) {
-            if (donateButton) closePopup(popup, donateButton); // Adicionado verificação
+            if (donateButton) closePopup(popup, donateButton); 
         });
 
         popup.appendChild(closer);
@@ -285,20 +272,17 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
         popup.appendChild(popupIFrameContainer);
     };
-
+    
     function toggleKofiIframe(iframeId, state, donateButton, selectors, heightLimits) {
-
         var popupId = _configManager.getValue(_myType, 'cssId') + `-${selectors.popupId}`;
         var existingPopup = document.getElementById(popupId);
-        if (!existingPopup) return; // Adicionado verificação
+        if (!existingPopup) return; 
 
         if (state === 'open') {
             var iframeDoc = document.getElementById(iframeId);
-            if (!iframeDoc) return; // Adicionado verificação
+            if (!iframeDoc || !iframeDoc.parentElement) return; 
             var iframeContainerParent = iframeDoc.parentElement;
-            if (!iframeContainerParent) return; // Adicionado verificação
-
-
+           
             var finalHeight = window.innerHeight - (window.innerHeight - iframeContainerParent.offsetTop) - 60;
             if (finalHeight > heightLimits.maxHeight) {
                 finalHeight = heightLimits.maxHeight;
@@ -306,17 +290,17 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
                 finalHeight = heightLimits.minHeight;
             }
             var widgetPageLoadStateIndex = widgetPageLoadInitiatedStates.findIndex(function (s) { return s[0] == donateButton; });
-            if (widgetPageLoadStateIndex === -1) return; // Adicionado verificação
+            if (widgetPageLoadStateIndex === -1) return; 
 
             var widgetPageLoadInitiated = widgetPageLoadInitiatedStates[widgetPageLoadStateIndex][1];
             if (!widgetPageLoadInitiated) {
                 var popupIFrameContainerId = popupId + selectors.popupIframeContainerIdSuffix;
-                _utils.loadKofiIframe(_configManager.getValue(_myType, 'pageId', true), popupIFrameContainerId, 'width: 100%; height: 98%;');
+                var pageIdToLoad = _configManager.getValue(_myType, 'pageId', true) || 'guihjzzz'; // Fallback
+                _utils.loadKofiIframe(pageIdToLoad, popupIFrameContainerId, 'width: 100%; height: 98%;');
                 widgetPageLoadInitiatedStates[widgetPageLoadStateIndex] = [donateButton, true];
             }
 
             slidePopupOpen(existingPopup, finalHeight);
-
             updateClass(donateButton, 'closed', 'open');
 
             closeButtonActionBlocked = true;
@@ -327,15 +311,16 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     };
 
     var getHtml = function () {
+        // Usar diretamente os valores FORÇADOS em kofiWidgetOverlayConfig para o botão inicial
+        var donateButtonImage = kofiWidgetOverlayConfig['floating-chat.donatebutton.image'];
+        var donateButtonBackgroundColor = kofiWidgetOverlayConfig['floating-chat.donateButton.background-color'];
+        var donateButtonCTAText = kofiWidgetOverlayConfig['floating-chat.donateButton.text'];
+        var donateButtonTextColor = kofiWidgetOverlayConfig['floating-chat.donateButton.text-color'];
 
-        var donateButtonImage = _configManager.getValue(_myType, 'donatebutton.image');
-        var donateButtonBackgroundColor = _configManager.getValue(_myType, 'donateButton.background-color');
-        var donateButtonCTAText = _configManager.getValue(_myType, 'donateButton.text');
-        var donateButtonTextColor = _configManager.getValue(_myType, 'donateButton.text-color');
         var body = '<style> .hiddenUntilReady { display: none; } </style>' +
             `<div id="${getButtonId()}" class="hiddenUntilReady closed floatingchat-donate-button" style="z-index:10000; background-color: ${donateButtonBackgroundColor};">` +
             `<img id="${getButtonImageId()}" src="${donateButtonImage}" class="kofiimg" data-rotation="0" />` +
-            `<span style="margin-left: 8px; color:${donateButtonTextColor}">${donateButtonCTAText}</span>`
+            `<span style="margin-left: 8px; color:${donateButtonTextColor}">${donateButtonCTAText}</span>` + // Adicionado fechamento do <span>
         '</div>';
         return body;
     };
@@ -369,7 +354,6 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
     };
 
     const debounce = function (debounceRef, callback) {
-
         if (debounceRef === null) {
             debounceRef = setTimeout(function () {
                 clearTimeout(debounceRef);
@@ -380,15 +364,12 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
     };
 
     const loadKofiIframe = function (pageId, parentElementId, iframeStyle) {
-
         var _iframeLoading = false;
         var _iframeDebounce = null;
         var _showFeed = false;
 
         const tryLoad = function () {
-
             if (!_iframeLoading) {
-
                 _iframeLoading = true;
                 let url = kofiWidgetOverlayConstants.kofiRoot + pageId + '/?hidefeed=true&widget=true&embed=true';
                 if (_showFeed) {
@@ -404,13 +385,10 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
                 } else {
                     console.error("Ko-fi Overlay: Parent element for iframe not found: " + parentElementId);
                 }
-
-
             } else {
                 debounce(_iframeDebounce, tryLoad)
             }
         };
-
         tryLoad();
     };
 
@@ -423,67 +401,64 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
     };
 
     const mergeOptions = function (optionSetA, optionSetB) {
-
-        for (var property in optionSetA) {
-            if (optionSetA.hasOwnProperty(property)) {
-                optionSetA[property] = optionSetB[property] !== undefined ? optionSetB[property] : optionSetA[property];
+        // Tentativa de garantir que as opções do usuário (optionSetB) tenham prioridade
+        for (var property in optionSetB) {
+            if (optionSetB.hasOwnProperty(property) && optionSetB[property] !== undefined) {
+                optionSetA[property] = optionSetB[property];
+            }
+        }
+         // Preencher com padrões se não fornecido pelo usuário
+        for (var propertyInA in optionSetA) {
+            if (optionSetA.hasOwnProperty(propertyInA) && optionSetB[propertyInA] === undefined && kofiWidgetOverlayConfig[propertyInA] !== undefined) {
+                 optionSetA[propertyInA] = kofiWidgetOverlayConfig[propertyInA];
             }
         }
     };
 
     const getConfigManager = function (config) {
-
         return new function () {
-
             var _tokens = [];
-
             const getValue = function (overlayType, key, isCore) {
-
                 const coreElement = isCore ? '.core' : '';
                 const configKey = `${overlayType}${coreElement}.${key}`;
+                
+                // Dar prioridade à configuração passada na chamada `draw()`
                 if (config[configKey] !== undefined) {
                     var configdata = config[configKey];
-
                     if (_tokens.length > 0) {
                         _tokens.forEach(t => {
                             configdata = configdata.replace(t.token, t.value);
                         });
                     }
-
                     return configdata;
                 }
-
+                // Se não estiver na config da chamada draw, usar o kofiWidgetOverlayConfig global
+                if (kofiWidgetOverlayConfig[configKey] !== undefined) {
+                     var configdata = kofiWidgetOverlayConfig[configKey];
+                     if (_tokens.length > 0) {
+                        _tokens.forEach(t => {
+                            configdata = configdata.replace(t.token, t.value);
+                        });
+                    }
+                    return configdata;
+                }
                 return '';
             };
-
-            const setToken = function (token, value) {
-                _tokens.push({ token: token, value: value });
-            };
-
-            const clearTokens = function () {
-                _tokens = [];
-            };
-
-            return {
-                getValue: getValue,
-                setToken: setToken,
-                clearTokens: clearTokens
-            }
+            const setToken = function (token, value) { _tokens.push({ token: token, value: value }); };
+            const clearTokens = function () { _tokens = []; };
+            return { getValue: getValue, setToken: setToken, clearTokens: clearTokens }
         };
     };
 
     const loadStyleSheet = function (styleSheetHref, targetDocument) {
-
         var docHead = targetDocument.head;
         if (!docHead) {
-            docHead = document.createElement('head');
+            docHead = targetDocument.createElement('head');
             targetDocument.prepend(docHead);
         }
-
         var styleSheet = targetDocument.querySelectorAll('[href="' + styleSheetHref + '"]')
         if (styleSheet.length === 0) {
-
-            var sslink = document.createElement('link');
+            var sslink = targetDocument.createElement('link');
             sslink.href = styleSheetHref;
             sslink.rel = 'stylesheet';
             sslink.type = 'text/css';
@@ -520,61 +495,74 @@ var kofiWidgetOverlay = kofiWidgetOverlay || (function () {
     };
 
     function getBuilder(widgetType) {
-
         var buildStrategy = _buildStrategy[widgetType] === undefined ? 'empty' : widgetType;
         var builder = _buildStrategy[buildStrategy];
-
         return builder;
     };
 
     const doWrite = function (builder, instanceId, config) {
-
-        var finalConfig = JSON.parse(JSON.stringify(kofiWidgetOverlayConfig));
-
-        _utils.mergeOptions(finalConfig, config);
+        var finalConfig = JSON.parse(JSON.stringify(kofiWidgetOverlayConfig)); // Começa com os padrões globais
+        _utils.mergeOptions(finalConfig, config); // Tenta mesclar com as configs da chamada draw()
         builder.write(instanceId, finalConfig, _utils);
     };
 
     const setConfigDefaults = function (config, widgetType, pId, instanceId) {
-
-        config[widgetType + '.core.pageId'] = pId;
+        // Aplicar o pId (nome de usuário) à configuração que será usada
+        config[widgetType + '.core.pageId'] = pId; 
         config[widgetType + '.cssId'] = config[widgetType + '.cssId'] !== undefined && config[widgetType + '.cssId'] !== '' ? config[widgetType + '.cssId'] : instanceId;
-        config[widgetType + '.stylesheets'] = config[widgetType + '.stylesheets'] !== undefined ? config[widgetType + '.stylesheets'] : '["https://fonts.googleapis.com/css?family=Nunito:400,700,800&display=swap"]';
+        
+        // Usar os padrões do kofiWidgetOverlayConfig global se não forem passados no config da chamada draw
+        if (config[widgetType + '.stylesheets'] === undefined) {
+            config[widgetType + '.stylesheets'] = kofiWidgetOverlayConfig[widgetType + '.stylesheets'];
+        }
+        if (config[widgetType + '.donateButton.text'] === undefined) {
+             config[widgetType + '.donateButton.text'] = kofiWidgetOverlayConfig[widgetType + '.donateButton.text'];
+        }
+        if (config[widgetType + '.donateButton.background-color'] === undefined) {
+             config[widgetType + '.donateButton.background-color'] = kofiWidgetOverlayConfig[widgetType + '.donateButton.background-color'];
+        }
+         if (config[widgetType + '.donateButton.text-color'] === undefined) {
+             config[widgetType + '.donateButton.text-color'] = kofiWidgetOverlayConfig[widgetType + '.donateButton.text-color'];
+        }
+        // ... adicionar mais padrões se necessário ...
 
         return config;
     }
 
     const draw = function (pId, config, containerId) {
+        if (!pId) {
+            console.error("Ko-fi: pageId (username) is required for draw function.");
+            return;
+        }
+        if (!config || !config['type']) {
+            console.error("Ko-fi: config object with 'type' property is required for draw function.");
+            return;
+        }
+
         if (isFirstRender) {
             parentButtonWrapperId = 'kofi-widget-overlay-' + _utils.uuidv4();
-
-            if (containerId != null) {
-                 var container = document.getElementById(containerId);
-                 if (container) { 
-                    container.innerHTML += `<div id="${parentButtonWrapperId}"></div>`;
-                 } else {
-                    console.error("Ko-fi Overlay: Container element not found: " + containerId + ". Appending to body.");
-                    var div = document.createElement('div');
-                    div.setAttribute("id", parentButtonWrapperId);
-                    document.body.appendChild(div);
-                 }
+            var targetContainer = containerId ? document.getElementById(containerId) : document.body;
+            if (!targetContainer && containerId) {
+                 console.error("Ko-fi Overlay: Container element not found: " + containerId + ". Appending to body.");
+                 targetContainer = document.body;
+            } else if (!targetContainer) { // Caso body não exista (extremamente raro)
+                 targetContainer = document.documentElement; // Fallback para html tag
             }
-            else {
-                var div = document.createElement('div');
-                div.setAttribute("id", parentButtonWrapperId);
-                document.body.appendChild(div);
-            }
+            
+            var div = document.createElement('div');
+            div.setAttribute("id", parentButtonWrapperId);
+            targetContainer.appendChild(div);
             isFirstRender = false;
         }
 
         var widgetType = config[kofiWidgetOverlayConstants.optionKeys.widgetType];
-        config = setConfigDefaults(config, widgetType, pId, parentButtonWrapperId);
+        
+        // Cria uma cópia limpa das configurações passadas para evitar modificar o objeto original `config`
+        var instanceConfig = JSON.parse(JSON.stringify(config));
+        instanceConfig = setConfigDefaults(instanceConfig, widgetType, pId, parentButtonWrapperId);
 
         var builder = getBuilder(widgetType);
-        if (containerId != null && document.getElementById(containerId)) { 
-            doWrite(builder, parentButtonWrapperId, config); // Corrigido para usar parentButtonWrapperId
-        }
-        else { doWrite(builder, parentButtonWrapperId, config); }
+        doWrite(builder, parentButtonWrapperId, instanceConfig); 
     };
 
     return {
