@@ -8,9 +8,9 @@ const kofiWidgetOverlayConfig = {
     'floating-chat.cssId': '',
     'floating-chat.notice.text': 'ko-fi.com/%HANDLE%',
     'floating-chat.donatebutton.image': 'https://storage.ko-fi.com/cdn/cup-border.png',
-    'floating-chat.donateButton.background-color': '#00b9fe',
-    'floating-chat.donateButton.text': 'Support me',
-    'floating-chat.donateButton.text-color': '#fff',
+    'floating-chat.donateButton.background-color': '#ff5722', // SUA COR AQUI
+    'floating-chat.donateButton.text': 'Apoie o Guizz!',      // SEU TEXTO AQUI
+    'floating-chat.donateButton.text-color': '#fff',     // SUA COR DE TEXTO AQUI
     'floating-chat.stylesheets': '["https://fonts.googleapis.com/css?family=Nunito:400,700,800&display=swap"]',
 };
 
@@ -44,8 +44,6 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     function createButtonContainerIframe(iframeId, mainStyleSheetFile) {
 
         var htmlBody = getHtml();
-        // CORREÇÃO APLICADA E MANTIDA: Assegure-se que 'guihjzzz' é seu nome de usuário correto no Ko-fi.
-        // Se for outro, substitua 'guihjzzz' pelo seu nome de usuário Ko-fi correto nas duas linhas abaixo.
         var buttonBody = '<html>' +
             '<head>' +
             `<link rel="preconnect" href="https://ko-fi.com/guihjzzz">` + 
@@ -66,8 +64,8 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
                 clearInterval(_timer);
                 var parentWrapper = document.getElementsByClassName(_topContainerWrapClass)[0];
                 var mobiParentWrapper = document.getElementsByClassName(_topMobiContainerWrapClass)[0];
-                parentWrapper.style = 'z-index:10000;';
-                mobiParentWrapper.style = 'z-index:10000;';
+                if (parentWrapper) parentWrapper.style = 'z-index:10000;'; // Adicionado verificação
+                if (mobiParentWrapper) mobiParentWrapper.style = 'z-index:10000;'; // Adicionado verificação
                 iframe.style = '';
             }
         }, 300);
@@ -81,17 +79,18 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     function attachDonateButton(iframeContainerElement, iframeId, selectors, heightLimits) {
 
         const donateButton = iframeContainerElement.getElementById(`${getButtonId()}`);
-        donateButton.addEventListener('click',
-            function () {
-                if (donateButton.classList.contains("closed")) {
-                    activateKofiIframe(iframeId, selectors, heightLimits);
-                } else if (!closeButtonActionBlocked) {
-                    var popupId = _configManager.getValue(_myType, 'cssId') + `-${selectors.popupId}`;
-                    var popup = document.getElementById(popupId);
-                    closePopup(popup, donateButton);
-                }
-            });
-
+        if (donateButton) { // Adicionado verificação
+            donateButton.addEventListener('click',
+                function () {
+                    if (donateButton.classList.contains("closed")) {
+                        activateKofiIframe(iframeId, selectors, heightLimits);
+                    } else if (!closeButtonActionBlocked) {
+                        var popupId = _configManager.getValue(_myType, 'cssId') + `-${selectors.popupId}`;
+                        var popup = document.getElementById(popupId);
+                        if (popup) closePopup(popup, donateButton); // Adicionado verificação
+                    }
+                });
+        }
         return donateButton;
     };
 
@@ -106,16 +105,22 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var iframeId = getContainerFrameId();
         var mobiIframeId = getMobiContainerFrameId();
 
-
-        var iframeHtml = `<div class="${_topContainerWrapClass}" style="height: 0px; transition: all 0.3s ease 0s; opacity:0;">` +
+        var iframeHtml = `<div id="${parentButtonWrapperId}-wrap" class="${_topContainerWrapClass}" style="height: 0px; transition: all 0.3s ease 0s; opacity:0;">` + // Adicionado ID ao wrapper
             `<iframe class="floatingchat-container" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;" id="${iframeId}"></iframe>` +
             '</div>' +
-            `<div class="${_topMobiContainerWrapClass}" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;">` +
+            `<div id="${parentButtonWrapperId}-wrap-mobi" class="${_topMobiContainerWrapClass}" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;">` + // Adicionado ID ao wrapper mobi
             `<iframe class="floatingchat-container-mobi" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;" id="${mobiIframeId}"></iframe>` +
             '</div>';
+        
+        var kofiOverlayContainer = document.getElementById(parentElementId); // Elemento principal onde o widget é desenhado
+        if (kofiOverlayContainer) {
+            kofiOverlayContainer.innerHTML = iframeHtml;
+        } else {
+            console.error("Ko-fi: Parent element for widget overlay not found: " + parentElementId);
+            // Se o container principal não for encontrado, não podemos prosseguir com a criação dos iframes.
+            return;
+        }
 
-        var existingPlaceHolder = document.getElementById(parentElementId);
-        existingPlaceHolder.innerHTML = iframeHtml;
 
         var iframeContainerElement = createButtonContainerIframe(iframeId, 'https://storage.ko-fi.com/cdn/scripts/floating-chat-main.css');
         var mobiIframeContainerElement = createButtonContainerIframe(mobiIframeId, 'https://storage.ko-fi.com/cdn/scripts/floating-chat-main.css');
@@ -124,79 +129,106 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var styleSheetsValue = _configManager.getValue(_myType, 'stylesheets');
 
         if ('' !== styleSheetsValue) {
-
-            styleSheets = JSON.parse(styleSheetsValue);
-
-            styleSheets.forEach(stylesheetRef => {
-                _utils.loadStyleSheet(stylesheetRef, document);
-                _utils.loadStyleSheet(stylesheetRef, iframeContainerElement);
-                _utils.loadStyleSheet(stylesheetRef, mobiIframeContainerElement);
-            });
+            try { // Adicionado try-catch para JSON.parse
+                var styleSheets = JSON.parse(styleSheetsValue);
+                styleSheets.forEach(stylesheetRef => {
+                    _utils.loadStyleSheet(stylesheetRef, document);
+                    if (iframeContainerElement) _utils.loadStyleSheet(stylesheetRef, iframeContainerElement);
+                    if (mobiIframeContainerElement) _utils.loadStyleSheet(stylesheetRef, mobiIframeContainerElement);
+                });
+            } catch (e) {
+                console.error("Ko-fi: Error parsing stylesheets JSON", e);
+            }
         }
 
-        var desktopDonateButton = attachDonateButton(iframeContainerElement, iframeId, {
-            popupId: 'kofi-popup-iframe',
-            popupIframeContainerIdSuffix: 'popup-iframe-container'
-        }, { maxHeight: 690, minHeight: 400, });
-        widgetPageLoadInitiatedStates.push([desktopDonateButton, false]);
-        var mobileDonateButton = attachDonateButton(mobiIframeContainerElement, mobiIframeId, {
-            popupId: 'kofi-popup-iframe-mobi',
-            popupIframeContainerIdSuffix: 'popup-iframe-container-mobi'
-        }, { maxHeight: 690, minHeight: 350 });
-        widgetPageLoadInitiatedStates.push([mobileDonateButton, false]);
+        var desktopDonateButton = null;
+        if (iframeContainerElement) {
+            desktopDonateButton = attachDonateButton(iframeContainerElement, iframeId, {
+                popupId: 'kofi-popup-iframe',
+                popupIframeContainerIdSuffix: 'popup-iframe-container'
+            }, { maxHeight: 690, minHeight: 400, });
+            if (desktopDonateButton) widgetPageLoadInitiatedStates.push([desktopDonateButton, false]);
+        }
+        
+        var mobileDonateButton = null;
+        if (mobiIframeContainerElement) {
+            mobileDonateButton = attachDonateButton(mobiIframeContainerElement, mobiIframeId, {
+                popupId: 'kofi-popup-iframe-mobi',
+                popupIframeContainerIdSuffix: 'popup-iframe-container-mobi'
+            }, { maxHeight: 690, minHeight: 350 });
+            if (mobileDonateButton) widgetPageLoadInitiatedStates.push([mobileDonateButton, false]);
+        }
 
-        insertPopupHtmlIntoBody(desktopDonateButton, {
-            popupId: 'kofi-popup-iframe',
-            popupClass: 'floating-chat-kofi-popup-iframe',
-            noticeClass: 'floating-chat-kofi-popup-iframe-notice',
-            closerClass: 'floating-chat-kofi-popup-iframe-closer',
-            popupIframeContainerClass: 'floating-chat-kofi-popup-iframe-container',
-            popupIframeContainerIdSuffix: 'popup-iframe-container',
-            popuupKofiIframeHeightOffset: 42
-        }, parentElementId);
 
-        insertPopupHtmlIntoBody(mobileDonateButton, {
-            popupId: 'kofi-popup-iframe-mobi',
-            popupClass: 'floating-chat-kofi-popup-iframe-mobi',
-            noticeClass: 'floating-chat-kofi-popup-iframe-notice-mobi',
-            closerClass: 'floating-chat-kofi-popup-iframe-closer-mobi',
-            popupIframeContainerClass: 'floating-chat-kofi-popup-iframe-container-mobi',
-            popupIframeContainerIdSuffix: 'popup-iframe-container-mobi',
-            popuupKofiIframeHeightOffset: 100
-        }, parentElementId);
+        if (desktopDonateButton) {
+             insertPopupHtmlIntoBody(desktopDonateButton, { // Passando o botão correto
+                popupId: 'kofi-popup-iframe',
+                popupClass: 'floating-chat-kofi-popup-iframe',
+                noticeClass: 'floating-chat-kofi-popup-iframe-notice',
+                closerClass: 'floating-chat-kofi-popup-iframe-closer',
+                popupIframeContainerClass: 'floating-chat-kofi-popup-iframe-container',
+                popupIframeContainerIdSuffix: 'popup-iframe-container',
+                popuupKofiIframeHeightOffset: 42
+            }, parentElementId);
+        }
+
+       if (mobileDonateButton) {
+            insertPopupHtmlIntoBody(mobileDonateButton, { // Passando o botão correto
+                popupId: 'kofi-popup-iframe-mobi',
+                popupClass: 'floating-chat-kofi-popup-iframe-mobi',
+                noticeClass: 'floating-chat-kofi-popup-iframe-notice-mobi',
+                closerClass: 'floating-chat-kofi-popup-iframe-closer-mobi',
+                popupIframeContainerClass: 'floating-chat-kofi-popup-iframe-container-mobi',
+                popupIframeContainerIdSuffix: 'popup-iframe-container-mobi',
+                popuupKofiIframeHeightOffset: 100
+            }, parentElementId);
+       }
     };
 
     function activateKofiIframe(iframeId, selectors, heightLimits) {
+        var iframeDoc = document.getElementById(iframeId);
+        if (!iframeDoc) return; // Adicionado verificação
+        var iframeContainerElement = iframeDoc.contentDocument;
+        if (!iframeContainerElement) return; // Adicionado verificação
 
-        var iframeContainerElement = document.getElementById(iframeId).contentDocument;
 
         const donateButton = iframeContainerElement.getElementById(`${getButtonId()}`);
+        if (!donateButton) return; // Adicionado verificação
         const kofiIframeState = donateButton.classList.contains('closed') ? 'open' : 'close';
         toggleKofiIframe(iframeId, kofiIframeState, donateButton, selectors, heightLimits);
     };
 
     function updateClass(element, oldClass, newClass) {
-
+        if (!element) return; // Adicionado verificação
         if (oldClass !== '') {
             element.classList.remove(oldClass);
         }
-
         if (newClass !== '') {
             element.classList.add(newClass);
         }
     };
 
     function slidePopupOpen(popup, finalHeight) {
+        if (!popup) return; // Adicionado verificação
         popup.style = `z-index:10000;width:328px!important;height: ${finalHeight}px!important; transition: height 0.5s ease, opacity 0.3s linear; opacity:1;`;
-        document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi")[0].style.display = "block";
-        document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice")[0].style.display = "block";
+        
+        var noticeMobi = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi")[0];
+        if (noticeMobi) noticeMobi.style.display = "block";
+        
+        var noticeDesktop = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice")[0];
+        if (noticeDesktop) noticeDesktop.style.display = "block";
     };
 
     function closePopup(popup, donateButton) {
+        if (!popup || !donateButton) return; // Adicionado verificação
         popup.style = 'height: 0px; width:0px; transition:height 0.3s ease 0s , width 1s linear,opacity 0.3s linear; opacity:0;';
         updateClass(donateButton, 'open', 'closed');
-        document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi")[0].style.display = "none";
-        document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice")[0].style.display = "none";
+
+        var noticeMobi = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi")[0];
+        if (noticeMobi) noticeMobi.style.display = "none";
+        
+        var noticeDesktop = document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice")[0];
+        if (noticeDesktop) noticeDesktop.style.display = "none";
     }
 
     function insertPopupHtmlIntoBody(donateButton, selectors, parentElementId) {
@@ -204,29 +236,31 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
         var popup = document.createElement('div');
         popup.id = popupId;
-        popup.classList = selectors.popupClass;
+        popup.className = selectors.popupClass; // Usar className para uma string de classes
         popup.style = `z-index:10000;height: 0px; width:0px; opacity: 0; transition: all 0.6s ease 0s;`;
 
-        if (parentElementId) {
-            document.getElementById(parentElementId).appendChild(popup);
+        var parentDiv = document.getElementById(parentElementId);
+        if (parentDiv) { // Adicionado verificação
+            parentDiv.appendChild(popup);
         }
         else {
-            document.body.appendChild(popup);
+            document.body.appendChild(popup); // Fallback, mas o ideal é que o parentElementId exista
         }
 
+
         var notice = document.createElement('div');
-        notice.classList = selectors.noticeClass;
+        notice.className = selectors.noticeClass;
 
 
         var noticeText = _configManager.getValue(_myType, 'notice.text');
         var pageId = _configManager.getValue(_myType, 'pageId', true);
 
         noticeText = noticeText.replace("%HANDLE%", pageId);
-        handleLink = document.createElement('a');
+        var handleLink = document.createElement('a'); // Declarar com var, let ou const
         handleLink.setAttribute('href', "https://"+ noticeText);
         handleLink.setAttribute('target', "_blank");
         handleLink.setAttribute('class', 'kfds-text-is-link-dark');
-        linkText = document.createTextNode(noticeText);
+        var linkText = document.createTextNode(noticeText); // Declarar com var, let ou const
         handleLink.appendChild(linkText);
         notice.appendChild(handleLink);
         popup.appendChild(notice);
@@ -236,16 +270,16 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
         closerContent.innerHTML = _configManager.getValue(_myType, 'closer', true);
         closer.appendChild(closerContent);
-        closer.classList = selectors.closerClass;
+        closer.className = selectors.closerClass;
 
         closer.addEventListener('click', function (event) {
-            closePopup(popup, donateButton);
+            if (donateButton) closePopup(popup, donateButton); // Adicionado verificação
         });
 
         popup.appendChild(closer);
 
         var popupIFrameContainer = document.createElement('div');
-        popupIFrameContainer.classList = selectors.popupIframeContainerClass;
+        popupIFrameContainer.className = selectors.popupIframeContainerClass;
         popupIFrameContainer.style = 'height:100%';
         popupIFrameContainer.id = popupId + selectors.popupIframeContainerIdSuffix;
 
@@ -256,10 +290,14 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
         var popupId = _configManager.getValue(_myType, 'cssId') + `-${selectors.popupId}`;
         var existingPopup = document.getElementById(popupId);
+        if (!existingPopup) return; // Adicionado verificação
 
         if (state === 'open') {
+            var iframeDoc = document.getElementById(iframeId);
+            if (!iframeDoc) return; // Adicionado verificação
+            var iframeContainerParent = iframeDoc.parentElement;
+            if (!iframeContainerParent) return; // Adicionado verificação
 
-            var iframeContainerParent = document.getElementById(iframeId).parentElement;;
 
             var finalHeight = window.innerHeight - (window.innerHeight - iframeContainerParent.offsetTop) - 60;
             if (finalHeight > heightLimits.maxHeight) {
@@ -268,6 +306,8 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
                 finalHeight = heightLimits.minHeight;
             }
             var widgetPageLoadStateIndex = widgetPageLoadInitiatedStates.findIndex(function (s) { return s[0] == donateButton; });
+            if (widgetPageLoadStateIndex === -1) return; // Adicionado verificação
+
             var widgetPageLoadInitiated = widgetPageLoadInitiatedStates[widgetPageLoadStateIndex][1];
             if (!widgetPageLoadInitiated) {
                 var popupIFrameContainerId = popupId + selectors.popupIframeContainerIdSuffix;
@@ -359,7 +399,7 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
 
                 iframe.src = url;
                 iframe.style = iframeStyle;
-                if (parentElement) { // Adicionado verificação para evitar erro se parentElement for null
+                if (parentElement) { 
                     parentElement.appendChild(iframe);
                 } else {
                     console.error("Ko-fi Overlay: Parent element for iframe not found: " + parentElementId);
@@ -436,14 +476,14 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
 
         var docHead = targetDocument.head;
         if (!docHead) {
-            docHead = targetDocument.createElement('head');
+            docHead = document.createElement('head');
             targetDocument.prepend(docHead);
         }
 
         var styleSheet = targetDocument.querySelectorAll('[href="' + styleSheetHref + '"]')
         if (styleSheet.length === 0) {
 
-            var sslink = targetDocument.createElement('link');
+            var sslink = document.createElement('link');
             sslink.href = styleSheetHref;
             sslink.rel = 'stylesheet';
             sslink.type = 'text/css';
@@ -510,11 +550,10 @@ var kofiWidgetOverlay = kofiWidgetOverlay || (function () {
 
             if (containerId != null) {
                  var container = document.getElementById(containerId);
-                 if (container) { // Adicionado verificação para evitar erro se containerId for inválido
+                 if (container) { 
                     container.innerHTML += `<div id="${parentButtonWrapperId}"></div>`;
                  } else {
-                    console.error("Ko-fi Overlay: Container element not found: " + containerId);
-                    // Fallback para adicionar ao body se o container não for encontrado
+                    console.error("Ko-fi Overlay: Container element not found: " + containerId + ". Appending to body.");
                     var div = document.createElement('div');
                     div.setAttribute("id", parentButtonWrapperId);
                     document.body.appendChild(div);
@@ -532,8 +571,8 @@ var kofiWidgetOverlay = kofiWidgetOverlay || (function () {
         config = setConfigDefaults(config, widgetType, pId, parentButtonWrapperId);
 
         var builder = getBuilder(widgetType);
-        if (containerId != null && document.getElementById(containerId)) { // Adicionado verificação
-            doWrite(builder, containerId, config);
+        if (containerId != null && document.getElementById(containerId)) { 
+            doWrite(builder, parentButtonWrapperId, config); // Corrigido para usar parentButtonWrapperId
         }
         else { doWrite(builder, parentButtonWrapperId, config); }
     };
