@@ -1,4 +1,4 @@
-﻿/* config */
+/* config */
 
 const kofiWidgetOverlayConfig = {
     'floating-chat.core.pageId': '',
@@ -44,10 +44,12 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     function createButtonContainerIframe(iframeId, mainStyleSheetFile) {
 
         var htmlBody = getHtml();
+        // CORREÇÃO APLICADA AQUI:
         var buttonBody = '<html>' +
             '<head>' +
-            `<link rel="preconnect" href=ko-fi.com/guihjzzz">` +
-            `<link rel="dns-prefetch" href="ko-fi.com/guihjzzz">` +
+            // Assegure-se que 'guihjzzz' é seu nome de usuário correto no Ko-fi. Se for outro, substitua.
+            `<link rel="preconnect" href="https://ko-fi.com/guihjzzz">` + 
+            `<link rel="dns-prefetch" href="https://ko-fi.com/guihjzzz">` +
             `<link rel="preconnect" href="https://storage.ko-fi.com/">` +
             `<link rel="dns-prefetch" href="https://storage.ko-fi.com/">` +
             `<link href="${mainStyleSheetFile}" rel="stylesheet" type="text/css" />` +
