@@ -1,16 +1,16 @@
 /* config */
 
 const kofiWidgetOverlayConfig = {
-    'floating-chat.core.pageId': 'guihjzzz', // FORÇADO AQUI TAMBÉM
+    'floating-chat.core.pageId': 'guihjzzz', 
     'floating-chat.core.closer': '<svg height="0px" width="15px"><line x1="2" y1="8" x2="13" y2="18" style="stroke:#000; stroke-width:3" /><line x1="13" y1="8" x2="2" y2="18" style="stroke:#000; stroke-width:3" /></svg>',
     'floating-chat.core.position.bottom-left': 'position: fixed; bottom: 50px; left: 10px; width: 160px; height: 65px;',
 
     'floating-chat.cssId': '',
-    'floating-chat.notice.text': 'ko-fi.com/%HANDLE%', // %HANDLE% será substituído pelo pageId
+    'floating-chat.notice.text': 'ko-fi.com/%HANDLE%',
     'floating-chat.donatebutton.image': 'https://storage.ko-fi.com/cdn/cup-border.png',
-    'floating-chat.donateButton.background-color': '#ff5722', // SUA COR DESEJADA
-    'floating-chat.donateButton.text': 'Apoie o Guizz!',      // SEU TEXTO DESEJADO
-    'floating-chat.donateButton.text-color': '#fff',         // SUA COR DE TEXTO DESEJADA
+    'floating-chat.donateButton.background-color': '#ff5722', // SUA COR
+    'floating-chat.donateButton.text': 'Apoie o Guizz!',      // SEU TEXTO
+    'floating-chat.donateButton.text-color': '#fff',         // SUA COR DE TEXTO
     'floating-chat.stylesheets': '["https://fonts.googleapis.com/css?family=Nunito:400,700,800&display=swap"]',
 };
 
@@ -18,8 +18,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
     const _configManager = _utils.getConfigManager(config);
     const _myType = 'floating-chat';
-    // ... (resto do código inicial igual ao anterior) ...
-
+   
     function getButtonId() {
         return `${_configManager.getValue(_myType, 'cssId')}-donate-button`;
     };
@@ -37,7 +36,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     };
 
     function createButtonContainerIframe(iframeId, mainStyleSheetFile) {
-        var htmlBody = getHtml(); // getHtml() agora usará os valores forçados de kofiWidgetOverlayConfig
+        var htmlBody = getHtml(); 
         var buttonBody = '<html>' +
             '<head>' +
             `<link rel="preconnect" href="https://ko-fi.com/guihjzzz">` + 
@@ -56,8 +55,8 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
             var doc = iframe.contentDocument || iframe.contentWindow;
             if (doc && doc.readyState == 'complete') {
                 clearInterval(_timer);
-                var parentWrapper = document.getElementsByClassName('floatingchat-container-wrap')[0]; // Usando a classe diretamente
-                var mobiParentWrapper = document.getElementsByClassName('floatingchat-container-wrap-mobi')[0]; // Usando a classe diretamente
+                var parentWrapper = document.getElementsByClassName('floatingchat-container-wrap')[0];
+                var mobiParentWrapper = document.getElementsByClassName('floatingchat-container-wrap-mobi')[0];
                 if (parentWrapper) parentWrapper.style = 'z-index:10000;';
                 if (mobiParentWrapper) mobiParentWrapper.style = 'z-index:10000;';
                 iframe.style = '';
@@ -69,11 +68,8 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         return iframeContainerElement;
     };
     
-    // ... (função attachDonateButton e outras funções permanecem as mesmas que te enviei na ÚLTIMA vez) ...
-    // ... (importante garantir que as verificações de `if (elemento)` estão lá) ...
-
     function attachDonateButton(iframeContainerElement, iframeId, selectors, heightLimits) {
-        const donateButton = iframeContainerElement.getElementById(getButtonId()); // Usando getButtonId()
+        const donateButton = iframeContainerElement.getElementById(getButtonId()); 
         if (donateButton) { 
             donateButton.addEventListener('click',
                 function () {
@@ -98,11 +94,12 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
 
         var iframeId = getContainerFrameId();
         var mobiIframeId = getMobiContainerFrameId();
+        var cssId = _configManager.getValue(_myType, 'cssId'); // Obter o cssId uma vez
 
-        var iframeHtml = `<div id="${_configManager.getValue(_myType, 'cssId')}-wrap" class="floatingchat-container-wrap" style="height: 0px; transition: all 0.3s ease 0s; opacity:0;">` +
+        var iframeHtml = `<div id="${cssId}-wrap" class="floatingchat-container-wrap" style="height: 0px; transition: all 0.3s ease 0s; opacity:0;">` +
             `<iframe class="floatingchat-container" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;" id="${iframeId}"></iframe>` +
             '</div>' +
-            `<div id="${_configManager.getValue(_myType, 'cssId')}-wrap-mobi" class="floatingchat-container-wrap-mobi" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;">` +
+            `<div id="${cssId}-wrap-mobi" class="floatingchat-container-wrap-mobi" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;">` +
             `<iframe class="floatingchat-container-mobi" style="height: 0px; transition: all 0.6s ease 0s; opacity:0;" id="${mobiIframeId}"></iframe>` +
             '</div>';
         
@@ -121,7 +118,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var styleSheetsValue = _configManager.getValue(_myType, 'stylesheets');
 
         if ('' !== styleSheetsValue) {
-            try {
+            try { 
                 var styleSheets = JSON.parse(styleSheetsValue);
                 styleSheets.forEach(stylesheetRef => {
                     _utils.loadStyleSheet(stylesheetRef, document);
@@ -239,9 +236,9 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var notice = document.createElement('div');
         notice.className = selectors.noticeClass;
 
-        var noticeTextRaw = _configManager.getValue(_myType, 'notice.text'); // Usar a configuração original
-        var pageIdToUse = _configManager.getValue(_myType, 'pageId', true) || 'guihjzzz'; // Fallback para guihjzzz
-        var noticeText = noticeTextRaw.replace("%HANDLE%", pageIdToUse); // Substituir %HANDLE%
+        var noticeTextRaw = _configManager.getValue(_myType, 'notice.text');
+        var pageIdToUse = _configManager.getValue(_myType, 'pageId', true) || 'guihjzzz'; 
+        var noticeText = noticeTextRaw.replace("%HANDLE%", pageIdToUse); 
         
         var handleLink = document.createElement('a'); 
         handleLink.setAttribute('href', "https://"+ noticeText);
@@ -295,7 +292,7 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
             var widgetPageLoadInitiated = widgetPageLoadInitiatedStates[widgetPageLoadStateIndex][1];
             if (!widgetPageLoadInitiated) {
                 var popupIFrameContainerId = popupId + selectors.popupIframeContainerIdSuffix;
-                var pageIdToLoad = _configManager.getValue(_myType, 'pageId', true) || 'guihjzzz'; // Fallback
+                var pageIdToLoad = _configManager.getValue(_myType, 'pageId', true) || 'guihjzzz'; 
                 _utils.loadKofiIframe(pageIdToLoad, popupIFrameContainerId, 'width: 100%; height: 98%;');
                 widgetPageLoadInitiatedStates[widgetPageLoadStateIndex] = [donateButton, true];
             }
@@ -310,20 +307,29 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         }
     };
 
+    // ***** MODIFICAÇÃO IMPORTANTE AQUI *****
     var getHtml = function () {
-        // Usar diretamente os valores FORÇADOS em kofiWidgetOverlayConfig para o botão inicial
-        var donateButtonImage = kofiWidgetOverlayConfig['floating-chat.donatebutton.image'];
-        var donateButtonBackgroundColor = kofiWidgetOverlayConfig['floating-chat.donateButton.background-color'];
-        var donateButtonCTAText = kofiWidgetOverlayConfig['floating-chat.donateButton.text'];
-        var donateButtonTextColor = kofiWidgetOverlayConfig['floating-chat.donateButton.text-color'];
+        // Usar diretamente os valores FORÇADOS de kofiWidgetOverlayConfig para o botão inicial
+        // OU usar os valores passados pela função .draw() se eles existirem no objeto 'config' desta instância
+        var donateButtonImage = _configManager.getValue(_myType, 'donatebutton.image');
+        var donateButtonBackgroundColor = _configManager.getValue(_myType, 'donateButton.background-color');
+        var donateButtonCTAText = _configManager.getValue(_myType, 'donateButton.text');
+        var donateButtonTextColor = _configManager.getValue(_myType, 'donateButton.text-color');
 
+        // Se por algum motivo os valores de _configManager estiverem vazios para o botão,
+        // usar os padrões definidos no kofiWidgetOverlayConfig global como último recurso.
+        if (!donateButtonBackgroundColor) donateButtonBackgroundColor = kofiWidgetOverlayConfig['floating-chat.donateButton.background-color'];
+        if (!donateButtonCTAText) donateButtonCTAText = kofiWidgetOverlayConfig['floating-chat.donateButton.text'];
+        if (!donateButtonTextColor) donateButtonTextColor = kofiWidgetOverlayConfig['floating-chat.donateButton.text-color'];
+        
         var body = '<style> .hiddenUntilReady { display: none; } </style>' +
             `<div id="${getButtonId()}" class="hiddenUntilReady closed floatingchat-donate-button" style="z-index:10000; background-color: ${donateButtonBackgroundColor};">` +
             `<img id="${getButtonImageId()}" src="${donateButtonImage}" class="kofiimg" data-rotation="0" />` +
-            `<span style="margin-left: 8px; color:${donateButtonTextColor}">${donateButtonCTAText}</span>` + // Adicionado fechamento do <span>
+            `<span style="margin-left: 8px; color:${donateButtonTextColor}">${donateButtonCTAText}</span>` + // Fechei a tag span
         '</div>';
         return body;
     };
+    // ***** FIM DA MODIFICAÇÃO IMPORTANTE *****
 
     return {
         getHtml: getHtml,
@@ -401,15 +407,14 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
     };
 
     const mergeOptions = function (optionSetA, optionSetB) {
-        // Tentativa de garantir que as opções do usuário (optionSetB) tenham prioridade
-        for (var property in optionSetB) {
+        for (var property in optionSetB) { // Dar prioridade às opções do usuário (optionSetB)
             if (optionSetB.hasOwnProperty(property) && optionSetB[property] !== undefined) {
                 optionSetA[property] = optionSetB[property];
             }
         }
-         // Preencher com padrões se não fornecido pelo usuário
-        for (var propertyInA in optionSetA) {
-            if (optionSetA.hasOwnProperty(propertyInA) && optionSetB[propertyInA] === undefined && kofiWidgetOverlayConfig[propertyInA] !== undefined) {
+         // Preencher com padrões globais se não fornecido pelo usuário na chamada draw()
+        for (var propertyInA in kofiWidgetOverlayConfig) { // Iterar sobre as chaves do config global
+            if (kofiWidgetOverlayConfig.hasOwnProperty(propertyInA) && optionSetA[propertyInA] === undefined) {
                  optionSetA[propertyInA] = kofiWidgetOverlayConfig[propertyInA];
             }
         }
@@ -422,7 +427,7 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
                 const coreElement = isCore ? '.core' : '';
                 const configKey = `${overlayType}${coreElement}.${key}`;
                 
-                // Dar prioridade à configuração passada na chamada `draw()`
+                // A 'config' aqui é o objeto 'finalConfig' que já passou pelo mergeOptions
                 if (config[configKey] !== undefined) {
                     var configdata = config[configKey];
                     if (_tokens.length > 0) {
@@ -432,17 +437,7 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
                     }
                     return configdata;
                 }
-                // Se não estiver na config da chamada draw, usar o kofiWidgetOverlayConfig global
-                if (kofiWidgetOverlayConfig[configKey] !== undefined) {
-                     var configdata = kofiWidgetOverlayConfig[configKey];
-                     if (_tokens.length > 0) {
-                        _tokens.forEach(t => {
-                            configdata = configdata.replace(t.token, t.value);
-                        });
-                    }
-                    return configdata;
-                }
-                return '';
+                return ''; // Retornar string vazia se não encontrar
             };
             const setToken = function (token, value) { _tokens.push({ token: token, value: value }); };
             const clearTokens = function () { _tokens = []; };
@@ -453,12 +448,12 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
     const loadStyleSheet = function (styleSheetHref, targetDocument) {
         var docHead = targetDocument.head;
         if (!docHead) {
-            docHead = targetDocument.createElement('head');
+            docHead = document.createElement('head');
             targetDocument.prepend(docHead);
         }
         var styleSheet = targetDocument.querySelectorAll('[href="' + styleSheetHref + '"]')
         if (styleSheet.length === 0) {
-            var sslink = targetDocument.createElement('link');
+            var sslink = document.createElement('link');
             sslink.href = styleSheetHref;
             sslink.rel = 'stylesheet';
             sslink.type = 'text/css';
@@ -501,40 +496,35 @@ var kofiWidgetOverlay = kofiWidgetOverlay || (function () {
     };
 
     const doWrite = function (builder, instanceId, config) {
-        var finalConfig = JSON.parse(JSON.stringify(kofiWidgetOverlayConfig)); // Começa com os padrões globais
-        _utils.mergeOptions(finalConfig, config); // Tenta mesclar com as configs da chamada draw()
-        builder.write(instanceId, finalConfig, _utils);
+        // 'config' aqui já deve ser o 'instanceConfig' que foi processado por setConfigDefaults
+        builder.write(instanceId, config, _utils);
     };
 
-    const setConfigDefaults = function (config, widgetType, pId, instanceId) {
-        // Aplicar o pId (nome de usuário) à configuração que será usada
-        config[widgetType + '.core.pageId'] = pId; 
-        config[widgetType + '.cssId'] = config[widgetType + '.cssId'] !== undefined && config[widgetType + '.cssId'] !== '' ? config[widgetType + '.cssId'] : instanceId;
+    const setConfigDefaults = function (configFromDraw, widgetType, pId, instanceId) {
+        // Começa com uma cópia profunda dos padrões globais
+        let finalConfig = JSON.parse(JSON.stringify(kofiWidgetOverlayConfig));
+    
+        // Sobrescreve com as configurações passadas na chamada draw()
+        // Isso garante que pageId, text, background-color, etc., da chamada draw() tenham prioridade
+        for (var key in configFromDraw) {
+            if (configFromDraw.hasOwnProperty(key)) {
+                finalConfig[key] = configFromDraw[key];
+            }
+        }
         
-        // Usar os padrões do kofiWidgetOverlayConfig global se não forem passados no config da chamada draw
-        if (config[widgetType + '.stylesheets'] === undefined) {
-            config[widgetType + '.stylesheets'] = kofiWidgetOverlayConfig[widgetType + '.stylesheets'];
-        }
-        if (config[widgetType + '.donateButton.text'] === undefined) {
-             config[widgetType + '.donateButton.text'] = kofiWidgetOverlayConfig[widgetType + '.donateButton.text'];
-        }
-        if (config[widgetType + '.donateButton.background-color'] === undefined) {
-             config[widgetType + '.donateButton.background-color'] = kofiWidgetOverlayConfig[widgetType + '.donateButton.background-color'];
-        }
-         if (config[widgetType + '.donateButton.text-color'] === undefined) {
-             config[widgetType + '.donateButton.text-color'] = kofiWidgetOverlayConfig[widgetType + '.donateButton.text-color'];
-        }
-        // ... adicionar mais padrões se necessário ...
-
-        return config;
+        // Define o pageId e cssId especificamente
+        finalConfig[widgetType + '.core.pageId'] = pId;
+        finalConfig[widgetType + '.cssId'] = (configFromDraw[widgetType + '.cssId'] !== undefined && configFromDraw[widgetType + '.cssId'] !== '') ? configFromDraw[widgetType + '.cssId'] : instanceId;
+        
+        return finalConfig;
     }
 
-    const draw = function (pId, config, containerId) {
+    const draw = function (pId, configFromDraw, containerId) { // Renomeado config para configFromDraw
         if (!pId) {
             console.error("Ko-fi: pageId (username) is required for draw function.");
             return;
         }
-        if (!config || !config['type']) {
+        if (!configFromDraw || !configFromDraw['type']) {
             console.error("Ko-fi: config object with 'type' property is required for draw function.");
             return;
         }
@@ -545,21 +535,19 @@ var kofiWidgetOverlay = kofiWidgetOverlay || (function () {
             if (!targetContainer && containerId) {
                  console.error("Ko-fi Overlay: Container element not found: " + containerId + ". Appending to body.");
                  targetContainer = document.body;
-            } else if (!targetContainer) { // Caso body não exista (extremamente raro)
-                 targetContainer = document.documentElement; // Fallback para html tag
+            } else if (!targetContainer) { 
+                 targetContainer = document.documentElement; 
             }
             
             var div = document.createElement('div');
             div.setAttribute("id", parentButtonWrapperId);
-            targetContainer.appendChild(div);
+            if (targetContainer) targetContainer.appendChild(div); // Verificar se targetContainer existe
             isFirstRender = false;
         }
 
-        var widgetType = config[kofiWidgetOverlayConstants.optionKeys.widgetType];
+        var widgetType = configFromDraw[kofiWidgetOverlayConstants.optionKeys.widgetType];
         
-        // Cria uma cópia limpa das configurações passadas para evitar modificar o objeto original `config`
-        var instanceConfig = JSON.parse(JSON.stringify(config));
-        instanceConfig = setConfigDefaults(instanceConfig, widgetType, pId, parentButtonWrapperId);
+        var instanceConfig = setConfigDefaults(JSON.parse(JSON.stringify(configFromDraw)), widgetType, pId, parentButtonWrapperId);
 
         var builder = getBuilder(widgetType);
         doWrite(builder, parentButtonWrapperId, instanceConfig); 
