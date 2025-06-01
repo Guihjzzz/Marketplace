@@ -44,10 +44,10 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     function createButtonContainerIframe(iframeId, mainStyleSheetFile) {
 
         var htmlBody = getHtml();
-        // CORREÇÃO APLICADA AQUI:
+        // CORREÇÃO APLICADA E MANTIDA: Assegure-se que 'guihjzzz' é seu nome de usuário correto no Ko-fi.
+        // Se for outro, substitua 'guihjzzz' pelo seu nome de usuário Ko-fi correto nas duas linhas abaixo.
         var buttonBody = '<html>' +
             '<head>' +
-            // Assegure-se que 'guihjzzz' é seu nome de usuário correto no Ko-fi. Se for outro, substitua.
             `<link rel="preconnect" href="https://ko-fi.com/guihjzzz">` + 
             `<link rel="dns-prefetch" href="https://ko-fi.com/guihjzzz">` +
             `<link rel="preconnect" href="https://storage.ko-fi.com/">` +
@@ -61,21 +61,13 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var iframe = document.getElementById(iframeId);
 
         var _timer = setInterval(function () {
-
-            //delay the display of the button, so that the stylesheets get time to load
-            //the stylesheet load event does not appear to work reliably
-            //on safari on iOS
             var doc = iframe.contentDocument || iframe.contentWindow;
             if (doc && doc.readyState == 'complete') {
                 clearInterval(_timer);
-
                 var parentWrapper = document.getElementsByClassName(_topContainerWrapClass)[0];
                 var mobiParentWrapper = document.getElementsByClassName(_topMobiContainerWrapClass)[0];
-
-
                 parentWrapper.style = 'z-index:10000;';
                 mobiParentWrapper.style = 'z-index:10000;';
-
                 iframe.style = '';
             }
         }, 300);
@@ -153,7 +145,6 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         }, { maxHeight: 690, minHeight: 350 });
         widgetPageLoadInitiatedStates.push([mobileDonateButton, false]);
 
-        // Already create the widget popup iframe (hidden)
         insertPopupHtmlIntoBody(desktopDonateButton, {
             popupId: 'kofi-popup-iframe',
             popupClass: 'floating-chat-kofi-popup-iframe',
@@ -202,7 +193,6 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
     };
 
     function closePopup(popup, donateButton) {
-        // ar popup = document.getElementById(popupId);
         popup.style = 'height: 0px; width:0px; transition:height 0.3s ease 0s , width 1s linear,opacity 0.3s linear; opacity:0;';
         updateClass(donateButton, 'open', 'closed');
         document.getElementsByClassName("floating-chat-kofi-popup-iframe-notice-mobi")[0].style.display = "none";
@@ -272,15 +262,12 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
             var iframeContainerParent = document.getElementById(iframeId).parentElement;;
 
             var finalHeight = window.innerHeight - (window.innerHeight - iframeContainerParent.offsetTop) - 60;
-            //console.log('final height 1:' + finalHeight);
             if (finalHeight > heightLimits.maxHeight) {
                 finalHeight = heightLimits.maxHeight;
             } else if (finalHeight < heightLimits.minHeight) {
                 finalHeight = heightLimits.minHeight;
             }
-            //console.log('final height 2:' + finalHeight);
             var widgetPageLoadStateIndex = widgetPageLoadInitiatedStates.findIndex(function (s) { return s[0] == donateButton; });
-            // var widgetPageLoadState = widgetPageLoadInitiatedStates.find(function(s) { return s[0] == donateButton; });// 
             var widgetPageLoadInitiated = widgetPageLoadInitiatedStates[widgetPageLoadStateIndex][1];
             if (!widgetPageLoadInitiated) {
                 var popupIFrameContainerId = popupId + selectors.popupIframeContainerIdSuffix;
@@ -296,7 +283,6 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
             setTimeout(function () {
                 closeButtonActionBlocked = false;
             }, 1000);
-
         }
     };
 
@@ -330,7 +316,6 @@ var kofiWidgetOverlayConstants = kofiWidgetOverlayConstants || {
         ctaTextStyle: 'ctaTextStyle',
         cssId: 'cssid'
     },
-    //kofiRoot: 'http://localhost:55640/',
     kofiRoot: 'https://ko-fi.com/',
     paymentModalId: 'paymentModal'
 };
@@ -374,7 +359,12 @@ var kofiWidgetOverlayUtilities = kofiWidgetOverlayUtilities || function () {
 
                 iframe.src = url;
                 iframe.style = iframeStyle;
-                parentElement.appendChild(iframe);
+                if (parentElement) { // Adicionado verificação para evitar erro se parentElement for null
+                    parentElement.appendChild(iframe);
+                } else {
+                    console.error("Ko-fi Overlay: Parent element for iframe not found: " + parentElementId);
+                }
+
 
             } else {
                 debounce(_iframeDebounce, tryLoad)
@@ -519,7 +509,16 @@ var kofiWidgetOverlay = kofiWidgetOverlay || (function () {
             parentButtonWrapperId = 'kofi-widget-overlay-' + _utils.uuidv4();
 
             if (containerId != null) {
-                document.getElementById(containerId).innerHTML += `<div id="${parentButtonWrapperId}"></div>`;
+                 var container = document.getElementById(containerId);
+                 if (container) { // Adicionado verificação para evitar erro se containerId for inválido
+                    container.innerHTML += `<div id="${parentButtonWrapperId}"></div>`;
+                 } else {
+                    console.error("Ko-fi Overlay: Container element not found: " + containerId);
+                    // Fallback para adicionar ao body se o container não for encontrado
+                    var div = document.createElement('div');
+                    div.setAttribute("id", parentButtonWrapperId);
+                    document.body.appendChild(div);
+                 }
             }
             else {
                 var div = document.createElement('div');
@@ -533,7 +532,7 @@ var kofiWidgetOverlay = kofiWidgetOverlay || (function () {
         config = setConfigDefaults(config, widgetType, pId, parentButtonWrapperId);
 
         var builder = getBuilder(widgetType);
-        if (containerId != null) {
+        if (containerId != null && document.getElementById(containerId)) { // Adicionado verificação
             doWrite(builder, containerId, config);
         }
         else { doWrite(builder, parentButtonWrapperId, config); }
