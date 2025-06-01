@@ -46,8 +46,8 @@ var kofiWidgetOverlayFloatingChatBuilder = kofiWidgetOverlayFloatingChatBuilder 
         var htmlBody = getHtml();
         var buttonBody = '<html>' +
             '<head>' +
-            `<link rel="preconnect" href="https://ko-fi.com/">` +
-            `<link rel="dns-prefetch" href="https://ko-fi.com/">` +
+            `<link rel="preconnect" href=ko-fi.com/guihjzzz">` +
+            `<link rel="dns-prefetch" href="ko-fi.com/guihjzzz">` +
             `<link rel="preconnect" href="https://storage.ko-fi.com/">` +
             `<link rel="dns-prefetch" href="https://storage.ko-fi.com/">` +
             `<link href="${mainStyleSheetFile}" rel="stylesheet" type="text/css" />` +
