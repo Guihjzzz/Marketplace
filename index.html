@@ -5,8 +5,13 @@
   <title>Guizz Marketplace</title>
   <link href="./Celestia Marketplace_files/style.css" rel="stylesheet" type="text/css">
   <link rel="icon" type="image/png" href="https://github.com/Guihjzzz/Guihjzzzu/blob/main/6183b45cb8e2e747f3362f106c811bfd.jpg?raw=true">
-  <!-- O arquivo 'css' (provavelmente para a fonte Nunito) ainda pode ser útil se o seu style.css principal usa Nunito -->
+  
+  <!-- Script Linkvertise (mantido, pode ser removido para testes se o Ko-fi ainda falhar) -->
+  <script src="./Celestia Marketplace_files/linkvertise.js.baixados"></script><script>linkvertise(1332663, {whitelist: ["mediafire.com","drive.google.com"], blacklist: []});</script>
+  
+  <!-- O arquivo CSS para fontes é mantido -->
   <link href="./Celestia Marketplace_files/css" rel="stylesheet" type="text/css"> 
+  <!-- Removido o floating-chat-wrapper.css pois o script oficial do Ko-fi deve cuidar disso -->
 </head>
 
 <body>
@@ -16,7 +21,8 @@
       <input type="text" id="searchInput" placeholder="Pesquisar...">
     </div>
     <div class="grid" id="addOnsGrid">
-      <!-- Add-ons will be dynamically inserted here -->
+      <!-- SEUS CARDS AQUI -->
+      <!-- Exemplo de alguns cards -->
         <div class="card">
           <h2 class="glow-text">Realistic Biomes 1.2</h2>
           <a href="https://terabox.app/s/16ksG6wPb66iheb048HFCxg" target="_blank">
@@ -3001,15 +3007,18 @@
       </div>
     </div>
   </div>
-<!-- Removido o DIV estático do Ko-fi que estava aqui -->
-<script src="./Celestia Marketplace_files/overlay-widget.js.baixados"></script>
-<script>
-  kofiWidgetOverlay.draw('guihjzzz', { 
-    'type': 'floating-chat',
-    'floating-chat.donateButton.text': 'Apoie o Guizz!', 
-    'floating-chat.donateButton.background-color': '#ff5722', 
-    'floating-chat.donateButton.text-color': '#fff'
-  });
-</script>
+
+  <!-- SCRIPT OFICIAL DO KO-FI -->
+  <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+  <script>
+    kofiWidgetOverlay.draw('guihjzzz', { // Seu nome de usuário Ko-fi
+      'type': 'floating-chat',
+      'floating-chat.donateButton.text': 'Apoie o Guizz!', // Seu texto do botão
+      'floating-chat.donateButton.background-color': '#ff5722', // Sua cor de fundo do botão
+      'floating-chat.donateButton.text-color': '#fff' // Sua cor do texto do botão
+    });
+  </script>
+  <!-- FIM DO SCRIPT KO-FI OFICIAL -->
+
   <script src="./Celestia Marketplace_files/script.js.baixados"></script>
 </body></html>
